@@ -22,7 +22,7 @@
     errorMessage = "";
 
     try {
-      const data = await stockApi.getByTicker(ticker);
+      const data = await stockApi.getCompany(ticker);
       company = data;
     } catch (error) {
       errorMessage = "Failed to load company data. Please try again.";
