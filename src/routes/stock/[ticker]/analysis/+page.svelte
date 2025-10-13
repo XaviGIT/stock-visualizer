@@ -34,7 +34,11 @@
   };
 
   const transformAnalysisData = (raw: any): CompanyAnalysis => {
-    // Map the API response structure to the component's expected structure
+    // Extract full cash flow history from API response
+    const cashFlowAmounts = raw.cashFlow.cashFlowHistory?.map(
+      (item: any) => item.amount,
+    ) || [raw.cashFlow.latestOperatingCF || 0];
+
     return {
       companyInfo: raw.companyInfo,
       quickAnalysis: {
@@ -74,13 +78,8 @@
         totalAssets: raw.balanceSheet.totalAssets || 0,
         debtTrend: raw.balanceSheet.debtTrend,
 
-        // Cash Flow
-        operatingCashFlow: raw.cashFlow.consistentCashFlow
-          ? [
-              raw.cashFlow.latestOperatingCF || 0,
-              raw.cashFlow.averageOperatingCF || 0,
-            ]
-          : [raw.cashFlow.latestOperatingCF || 0],
+        // Cash Flow - FIXED: Now uses full history
+        operatingCashFlow: cashFlowAmounts,
         cashFlowTrend:
           raw.cashFlow.cfGrowthRate > 5
             ? "growing"
@@ -89,19 +88,15 @@
               : "stable",
 
         // Shares Outstanding
-        sharesOutstanding: raw.shares.sharesHistory.map((h: any) => h.shares),
+        sharesOutstanding:
+          raw.shares.sharesHistory?.map((s: any) => s.shares) || [],
         shareDilution:
           raw.shares.trend === "diluting"
             ? "significant-increase"
             : raw.shares.trend === "buying-back"
               ? "buyback"
               : "stable",
-        dilutionPercentage: raw.shares.changePercent_3yr || 0,
-      },
-      userInputs: {
-        selectedCategory: raw.userInputs.peterLynchCategory,
-        isBusinessStable: raw.userInputs.isBusinessStable,
-        canUnderstandDebt: raw.userInputs.canUnderstandDebt,
+        dilutionPercentage: raw.shares.changePercent_1yr || 0,
       },
     };
   };

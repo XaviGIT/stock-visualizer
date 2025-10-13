@@ -9,6 +9,7 @@
   import DebtAnalysis from "./debtAnalysis.svelte";
   import CashFlowChart from "./cashFlowChart.svelte";
   import ShareDilutionIndicator from "./shareDilutionIndicator.svelte";
+  import EarningsGrowthWidget from "./earningsGrowthWidget.svelte";
 
   export let data: CompanyAnalysis;
 
@@ -109,27 +110,13 @@
     </div>
 
     <!-- Earnings Consistency -->
-    <div class="analysis-card">
+    <div class="analysis-card full-width">
       <h3>💹 Earnings Growth</h3>
       <div class="card-content">
-        <div class="consistency-badge {metrics.earningsGrowthConsistency}">
-          <span class="badge-icon">
-            {#if metrics.earningsGrowthConsistency === "consistent"}
-              🎯
-            {:else if metrics.earningsGrowthConsistency === "erratic"}
-              ⚠️
-            {:else}
-              📉
-            {/if}
-          </span>
-          <span class="badge-text">
-            {metrics.earningsGrowthConsistency === "consistent"
-              ? "Consistent"
-              : metrics.earningsGrowthConsistency === "erratic"
-                ? "Erratic"
-                : "Declining"}
-          </span>
-        </div>
+        <EarningsGrowthWidget
+          consistency={metrics.earningsGrowthConsistency}
+          earningsData={metrics.earningsData}
+        />
       </div>
     </div>
 
