@@ -180,8 +180,11 @@
           {#if growthRate !== null}
             <div class="metric-box highlight">
               <span class="metric-label">Growth (CAGR)</span>
-              <span class="metric-value large" class:negative={growthRate < 0}>
-                {growthRate.toFixed(1)}%
+              <span
+                class="metric-value large"
+                class:negative={!growthRate || growthRate < 0}
+              >
+                {growthRate?.toFixed(1) ?? 0}%
               </span>
             </div>
           {/if}

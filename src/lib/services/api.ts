@@ -11,6 +11,12 @@ interface CompanyDetailResponse {
   cashFlows: any[];
 }
 
+interface UpdateMetadataPayload {
+  peterLynchCategory?: 'slow-grower' | 'stalwart' | 'fast-grower' | 'cyclical' | 'turnaround' | 'asset-play';
+  isBusinessStable?: boolean;
+  canUnderstandDebt?: boolean;
+}
+
 export const stockApi = {
     async search(term: string): Promise<SearchResult[]> {
         if (!term.trim()) {
@@ -65,5 +71,21 @@ export const stockApi = {
             console.error('Error fetching analysis:', error);
             throw error;
         }
+    },
+
+    async updateMetadata(ticker: string, payload: UpdateMetadataPayload) {
+        const response = await fetch(`${API_BASE_URL}/analysis/${ticker.toUpperCase()}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+        
+        if (!response.ok) {
+         throw new Error(`Failed to update metadata: ${response.statusText}`);
+        }
+        
+        return response.json();
     }
 }

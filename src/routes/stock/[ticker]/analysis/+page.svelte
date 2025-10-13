@@ -78,7 +78,7 @@
         totalAssets: raw.balanceSheet.totalAssets || 0,
         debtTrend: raw.balanceSheet.debtTrend,
 
-        // Cash Flow - FIXED: Now uses full history
+        // Cash Flow
         operatingCashFlow: cashFlowAmounts,
         cashFlowTrend:
           raw.cashFlow.cfGrowthRate > 5
@@ -97,6 +97,12 @@
               ? "buyback"
               : "stable",
         dilutionPercentage: raw.shares.changePercent_1yr || 0,
+      },
+      // Map userInputs from backend properly
+      userInputs: {
+        selectedCategory: raw.userInputs?.peterLynchCategory || null,
+        isBusinessStable: raw.userInputs?.isBusinessStable || false,
+        canUnderstandDebt: raw.userInputs?.canUnderstandDebt || false,
       },
     };
   };

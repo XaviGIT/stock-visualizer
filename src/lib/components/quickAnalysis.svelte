@@ -3,6 +3,7 @@
     CompanyAnalysis,
     CompanyCategory,
   } from "$lib/types/analysis.type";
+  import { stockApi } from "$lib/services/api";
   import CompanyCategorySelect from "./companyCategorySelect.svelte";
   import CapitalizationIndicator from "./capitalizationIndicator.svelte";
   import ROEGauge from "./roeGauge.svelte";
@@ -18,12 +19,60 @@
   let isBusinessStable = data.userInputs?.isBusinessStable || false;
   let canUnderstandDebt = data.userInputs?.canUnderstandDebt || false;
 
-  $: metrics = { ...data.quickAnalysis, ...data.companyInfo };
+  let isSaving = false;
+  let saveError: string | null = null;
 
-  const handleCategoryChange = (category: CompanyCategory) => {
-    selectedCategory = category;
-    // TODO: Save to backend
+  $: metrics = { ...data.quickAnalysis, ...data.companyInfo };
+  $: ticker = data.companyInfo.ticker;
+
+  const saveMetadata = async (payload: any) => {
+    isSaving = true;
+    saveError = null;
+
+    try {
+      const updatedData = await stockApi.updateMetadata(ticker, payload);
+      data = updatedData;
+      console.log("Metadata saved successfully");
+    } catch (error) {
+      console.error("Failed to save metadata:", error);
+      saveError = error instanceof Error ? error.message : "Failed to save";
+    } finally {
+      isSaving = false;
+    }
   };
+
+  const handleCategoryChange = async (category: CompanyCategory) => {
+    selectedCategory = category;
+    await saveMetadata({ peterLynchCategory: category });
+  };
+
+  // Debounce timer for checkbox changes
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const debouncedSave = (payload: any) => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(() => {
+      saveMetadata(payload);
+    }, 500); // Wait 500ms after last change
+  };
+
+  // Watch for changes to debt checkboxes
+  $: if (data) {
+    // Only trigger save if values actually changed from initial
+    const initialStable = data.userInputs?.isBusinessStable || false;
+    const initialUnderstand = data.userInputs?.canUnderstandDebt || false;
+
+    if (
+      isBusinessStable !== initialStable ||
+      canUnderstandDebt !== initialUnderstand
+    ) {
+      debouncedSave({
+        isBusinessStable,
+        canUnderstandDebt,
+      });
+    }
+  }
 </script>
 
 <div class="quick-analysis-section">
@@ -34,6 +83,19 @@
         Quick and dirty analysis - Peter Lynch style
       </p>
     </div>
+
+    <!-- Save Status Indicator -->
+    {#if isSaving}
+      <div class="save-status saving">
+        <span class="spinner-small"></span>
+        <span>Saving...</span>
+      </div>
+    {:else if saveError}
+      <div class="save-status error">
+        <span>❌</span>
+        <span>Failed to save</span>
+      </div>
+    {/if}
   </div>
 
   <div class="analysis-grid">
@@ -109,7 +171,7 @@
       </div>
     </div>
 
-    <!-- Earnings Consistency -->
+    <!-- Earnings Growth - Full Width -->
     <div class="analysis-card full-width">
       <h3>💹 Earnings Growth</h3>
       <div class="card-content">
@@ -175,6 +237,9 @@
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
     border-bottom: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .header-content h2 {
@@ -186,6 +251,43 @@
   .section-description {
     color: var(--text-secondary);
     font-size: 1rem;
+  }
+
+  /* Save Status Indicator */
+  .save-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .save-status.saving {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .save-status.error {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .spinner-small {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(30, 64, 175, 0.3);
+    border-top-color: #1e40af;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .analysis-grid {
@@ -276,36 +378,6 @@
     font-size: 0.85rem;
   }
 
-  /* Earnings Consistency Badge */
-  .consistency-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-
-  .consistency-badge.consistent {
-    background: var(--accent-success);
-    color: white;
-  }
-
-  .consistency-badge.erratic {
-    background: #f59e0b;
-    color: white;
-  }
-
-  .consistency-badge.declining {
-    background: var(--accent-error);
-    color: white;
-  }
-
-  .badge-icon {
-    font-size: 1.5rem;
-  }
-
   @media (max-width: 768px) {
     .analysis-grid {
       grid-template-columns: 1fr;
@@ -313,6 +385,12 @@
 
     .quick-analysis-section {
       padding: 1.5rem;
+    }
+
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
     }
   }
 </style>
