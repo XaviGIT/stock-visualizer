@@ -8,9 +8,19 @@ export type CompanyCategory =
 
 export type CapitalizationSize = 'micro' | 'small' | 'mid' | 'large' | 'mega';
 
+export interface CompanyInfo {
+  category: string;
+  exchange: string;
+  marketCap: number;
+  name: string;
+  price: number;
+  sector: string;
+  shares: number;
+  ticker: string;
+}
+
 export interface QuickAnalysisMetrics {
   // Company Classification
-  marketCap: number;
   capitalizationSize: CapitalizationSize;
   ipoDate: string | null;
   isRecentIPO: boolean;
@@ -46,8 +56,7 @@ export interface QuickAnalysisMetrics {
 }
 
 export interface CompanyAnalysis {
-  ticker: string;
-  companyName: string;
+  companyInfo: CompanyInfo,
   quickAnalysis: QuickAnalysisMetrics;
   userInputs?: {
     selectedCategory?: CompanyCategory;

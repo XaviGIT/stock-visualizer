@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { stockApi } from "$lib/services/api";
   import type { CompanyAnalysis } from "$lib/types/analysis.type";
-  import QuickAnalysis from "$lib/components/analysis/quickAnalysis.svelte";
+  import QuickAnalysis from "$lib/components/quickAnalysis.svelte";
   import ThemeToggle from "$lib/components/themeToggle.svelte";
 
   $: ticker = $page.params.ticker || "";
@@ -21,14 +21,83 @@
     errorMessage = "";
 
     try {
-      const data = await stockApi.getAnalysis(ticker);
-      analysisData = data;
+      const rawData = await stockApi.getAnalysis(ticker);
+
+      // Transform the API response to match the component's expected structure
+      analysisData = transformAnalysisData(rawData);
     } catch (error) {
       errorMessage = "Failed to load analysis data. Please try again.";
       console.error("Error fetching analysis:", error);
     } finally {
       isLoading = false;
     }
+  };
+
+  const transformAnalysisData = (raw: any): CompanyAnalysis => {
+    // Map the API response structure to the component's expected structure
+    return {
+      companyInfo: raw.companyInfo,
+      quickAnalysis: {
+        // Company Classification
+        capitalizationSize: raw.metadata.marketCapCategory || "mid",
+        ipoDate: raw.metadata.ipoDate,
+        isRecentIPO: raw.metadata.isRecentIPO,
+        isSpinoff: raw.metadata.isSpinoff,
+
+        // Profitability Checks
+        hasEverMadeOperatingProfit: raw.profitability.everProfitable,
+        consistentCashFlowGeneration: raw.cashFlow.consistentCashFlow,
+
+        // Returns & Leverage
+        averageROE: raw.returns.avgROE || 0,
+        roeAbove10Percent: raw.returns.roeAbove10,
+        financialLeverageRatio: raw.returns.financialLeverageRatio || 0,
+        debtToEquity: raw.returns.debtToEquity || 0,
+        leverageLevel: raw.returns.leverageLevel || "low",
+
+        // Earnings
+        earningsGrowthConsistency:
+          raw.earnings.consistency === "growing"
+            ? "consistent"
+            : raw.earnings.consistency === "declining"
+              ? "declining"
+              : "erratic",
+
+        // Balance Sheet
+        totalDebt: raw.balanceSheet.totalDebt,
+        totalAssets: raw.balanceSheet.totalAssets || 0,
+        debtTrend: raw.balanceSheet.debtTrend,
+
+        // Cash Flow
+        operatingCashFlow: raw.cashFlow.consistentCashFlow
+          ? [
+              raw.cashFlow.latestOperatingCF || 0,
+              raw.cashFlow.averageOperatingCF || 0,
+            ]
+          : [raw.cashFlow.latestOperatingCF || 0],
+        cashFlowTrend:
+          raw.cashFlow.cfGrowthRate > 5
+            ? "growing"
+            : raw.cashFlow.cfGrowthRate < -5
+              ? "declining"
+              : "stable",
+
+        // Shares Outstanding
+        sharesOutstanding: raw.shares.sharesHistory.map((h: any) => h.shares),
+        shareDilution:
+          raw.shares.trend === "diluting"
+            ? "significant-increase"
+            : raw.shares.trend === "buying-back"
+              ? "buyback"
+              : "stable",
+        dilutionPercentage: raw.shares.changePercent_3yr || 0,
+      },
+      userInputs: {
+        selectedCategory: raw.userInputs.peterLynchCategory,
+        isBusinessStable: raw.userInputs.isBusinessStable,
+        canUnderstandDebt: raw.userInputs.canUnderstandDebt,
+      },
+    };
   };
 </script>
 

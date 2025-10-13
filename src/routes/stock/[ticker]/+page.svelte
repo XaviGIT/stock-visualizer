@@ -211,19 +211,57 @@
         {/if}
       </div>
 
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2>Explore This Stock</h2>
+        <div class="actions-grid">
+          <a href="/stock/{ticker}/analysis" class="action-card primary">
+            <div class="action-icon">📊</div>
+            <div class="action-content">
+              <h3>Analysis</h3>
+              <p>Growth, profitability, and financial health metrics</p>
+            </div>
+            <span class="action-arrow">→</span>
+          </a>
+
+          <div class="action-card disabled">
+            <div class="action-icon">📈</div>
+            <div class="action-content">
+              <h3>Financial Statements</h3>
+              <p>Balance Sheet, Income Statement, Cash Flow</p>
+            </div>
+            <span class="coming-soon-badge">Soon</span>
+          </div>
+
+          <div class="action-card disabled">
+            <div class="action-icon">💰</div>
+            <div class="action-content">
+              <h3>Valuation</h3>
+              <p>DCF, Multiples, Intrinsic Value</p>
+            </div>
+            <span class="coming-soon-badge">Soon</span>
+          </div>
+
+          <div class="action-card disabled">
+            <div class="action-icon">📝</div>
+            <div class="action-content">
+              <h3>Story</h3>
+              <p>Investment thesis and narrative</p>
+            </div>
+            <span class="coming-soon-badge">Soon</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Coming Soon Sections -->
       <div class="coming-soon-grid">
         <div class="coming-soon-card">
-          <h3>📈 Financial Statements</h3>
-          <p>Balance Sheet, Income Statement, Cash Flow</p>
+          <h3>👥 Management</h3>
+          <p>Executive team, compensation, insider trading</p>
         </div>
         <div class="coming-soon-card">
-          <h3>🔍 Analysis</h3>
-          <p>Growth, Profitability, Financial Health</p>
-        </div>
-        <div class="coming-soon-card">
-          <h3>💰 Valuation</h3>
-          <p>DCF, Multiples, Intrinsic Value</p>
+          <h3>🏢 Sector Analysis</h3>
+          <p>Industry positioning and competitive landscape</p>
         </div>
       </div>
     {/if}
@@ -504,6 +542,102 @@
     box-shadow: var(--shadow-md);
   }
 
+  /* Quick Actions */
+  .quick-actions {
+    margin-bottom: 2rem;
+  }
+
+  .quick-actions h2 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .action-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+
+  .action-card.primary {
+    border-color: var(--accent-primary);
+    background: linear-gradient(
+      135deg,
+      var(--card-bg) 0%,
+      var(--bg-secondary) 100%
+    );
+  }
+
+  .action-card.primary:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-primary-hover);
+  }
+
+  .action-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .action-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+  }
+
+  .action-content {
+    flex: 1;
+  }
+
+  .action-content h3 {
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+  }
+
+  .action-content p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .action-arrow {
+    color: var(--accent-primary);
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+  }
+
+  .action-card.primary:hover .action-arrow {
+    transform: translateX(4px);
+  }
+
+  .coming-soon-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--text-tertiary);
+    color: white;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
   /* Coming Soon Grid */
   .coming-soon-grid {
     display: grid;
@@ -558,6 +692,19 @@
 
     .price {
       font-size: 2rem;
+    }
+
+    .actions-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .action-card {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .action-arrow {
+      display: none;
     }
   }
 </style>

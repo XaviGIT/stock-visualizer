@@ -17,7 +17,7 @@
   let isBusinessStable = data.userInputs?.isBusinessStable || false;
   let canUnderstandDebt = data.userInputs?.canUnderstandDebt || false;
 
-  $: metrics = data.quickAnalysis;
+  $: metrics = { ...data.quickAnalysis, ...data.companyInfo };
 
   const handleCategoryChange = (category: CompanyCategory) => {
     selectedCategory = category;
