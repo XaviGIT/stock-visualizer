@@ -62,6 +62,12 @@
             : raw.earnings.consistency === "declining"
               ? "declining"
               : "erratic",
+        earningsData: {
+          epsHistory: raw.earnings.epsHistory || [],
+          growthRate: raw.earnings.earningsGrowth,
+          volatilityScore: raw.earnings.volatilityScore,
+          consistency: raw.earnings.consistency,
+        },
 
         // Balance Sheet
         totalDebt: raw.balanceSheet.totalDebt,

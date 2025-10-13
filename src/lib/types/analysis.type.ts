@@ -19,6 +19,13 @@ export interface CompanyInfo {
   ticker: string;
 }
 
+export interface EarningsData {
+  epsHistory: Array<{ year: number; eps: number }>;
+  growthRate: number | null;
+  volatilityScore: number | null;
+  consistency: 'stable' | 'growing' | 'erratic' | 'declining' | 'insufficient-data';
+}
+
 export interface QuickAnalysisMetrics {
   // Company Classification
   capitalizationSize: CapitalizationSize;
@@ -39,6 +46,7 @@ export interface QuickAnalysisMetrics {
   
   // Earnings
   earningsGrowthConsistency: 'consistent' | 'erratic' | 'declining';
+  earningsData?: EarningsData;
   
   // Balance Sheet
   totalDebt: number;
