@@ -1,11 +1,12 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
+  import "../app-earthy.css";
+  import { theme } from "$lib/stores/theme";
+  import { onMount } from "svelte";
 
-	let { children } = $props();
+  // Initialize theme immediately when the layout mounts
+  onMount(() => {
+    theme.init();
+  });
 </script>
 
-<svelte:head>
-	<link rel="icon" href={favicon} />
-</svelte:head>
-
-{@render children?.()}
+<slot />
