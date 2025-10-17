@@ -233,14 +233,14 @@
             <span class="coming-soon-badge">Soon</span>
           </div>
 
-          <div class="action-card disabled">
+          <a href="/stock/{ticker}/valuation" class="action-card primary">
             <div class="action-icon">💰</div>
             <div class="action-content">
               <h3>Valuation</h3>
-              <p>DCF, Multiples, Intrinsic Value</p>
+              <p>DCF models, intrinsic value calculations</p>
             </div>
-            <span class="coming-soon-badge">Soon</span>
-          </div>
+            <span class="action-arrow">→</span>
+          </a>
 
           <div class="action-card disabled">
             <div class="action-icon">📝</div>
