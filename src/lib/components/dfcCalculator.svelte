@@ -176,22 +176,53 @@
     <!-- Current FCF (Year 0) -->
     <div class="form-section">
       <h3>Current Free Cash Flow (Year 0)</h3>
+
+      <div class="units-info">
+        <strong>⚠️ Important: Units Consistency</strong>
+        <p>
+          Enter FCF in the <strong>same units</strong> as your shares outstanding.
+        </p>
+        <p>Example for AMD:</p>
+        <ul>
+          <li>Shares Outstanding: 1,620,000,000 (full number)</li>
+          <li>FCF: 3,500,000,000 (also full number, not "3.5")</li>
+        </ul>
+        <p>
+          <strong>Do NOT</strong> enter FCF in millions if shares are in full units!
+        </p>
+      </div>
+
       <div class="form-group">
         <label for="fcf-year-0">Current FCF (Base Year)</label>
         <input
           id="fcf-year-0"
           type="number"
           bind:value={fcfYear0}
-          placeholder="Enter current/latest FCF"
+          placeholder="Enter current/latest FCF (same units as shares)"
           required
         />
         {#if fcfYear0 > 0}
           <span class="fcf-formatted-inline">{formatNumber(fcfYear0)}</span>
         {/if}
         <span class="help-text">
-          This is the starting point. Enter the most recent full-year FCF.
+          Enter the most recent full-year Free Cash Flow in absolute numbers.
         </span>
       </div>
+
+      {#if fcfYear0 > 0 && sharesOutstanding > 0}
+        <div class="sanity-check">
+          <strong>Quick Sanity Check:</strong>
+          <p>
+            Current FCF per share: <strong
+              >${(fcfYear0 / sharesOutstanding).toFixed(2)}</strong
+            >
+          </p>
+          <p class="help-text">
+            This should be a reasonable number (typically $0.50 - $10 for most
+            stocks). If it's tiny (like $0.0001), your FCF units are wrong!
+          </p>
+        </div>
+      {/if}
     </div>
 
     <!-- FCF Projections -->
@@ -350,6 +381,79 @@
     font-size: 0.9rem;
     color: var(--accent-success);
     font-weight: 600;
+  }
+
+  .units-info {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :root[data-theme="dark"] .units-info {
+    background: rgba(255, 193, 7, 0.1);
+    border-color: rgba(255, 193, 7, 0.5);
+  }
+
+  .units-info strong {
+    display: block;
+    color: #856404;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  :root[data-theme="dark"] .units-info strong {
+    color: #ffc107;
+  }
+
+  .units-info p {
+    color: #856404;
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+  }
+
+  :root[data-theme="dark"] .units-info p {
+    color: rgba(255, 193, 7, 0.9);
+  }
+
+  .units-info ul {
+    margin: 0.5rem 0 0.5rem 1.5rem;
+    color: #856404;
+  }
+
+  :root[data-theme="dark"] .units-info ul {
+    color: rgba(255, 193, 7, 0.9);
+  }
+
+  .units-info li {
+    font-size: 0.85rem;
+    margin: 0.25rem 0;
+  }
+
+  .sanity-check {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+  .sanity-check strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .sanity-check p {
+    margin: 0.25rem 0;
+    color: var(--text-secondary);
+  }
+
+  .sanity-check p strong {
+    color: var(--accent-success);
+    font-size: 1.1rem;
+    display: inline;
   }
 
   .form-group {
