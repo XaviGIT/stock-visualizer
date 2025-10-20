@@ -4,7 +4,6 @@ import type { SearchResult } from "$lib/types/search.type";
 import type {
   PeerComparisonResponse,
   SectorAnalysisResponse,
-  SectorListResponse,
 } from "$lib/types/sector.type";
 import type { Stock } from "$lib/types/stock.type";
 import type {
@@ -218,7 +217,7 @@ export const stockApi = {
     }
   },
 
-  async getAllSectors(): Promise<SectorListResponse> {
+  async getAllSectors(): Promise<any> {
     try {
       const response = await fetch(`${API_BASE_URL}/sectors/list`);
 
