@@ -21,25 +21,44 @@
   let projectionGrowthRate = 5.0;
 
   // Auto-fill FCF when Year 0 or growth rate changes
-  $: if (fcfYear0 > 0 && projectionGrowthRate) {
-    autoFillFCF();
+  // Use $: to make it reactive but only trigger when values actually change
+  let lastFcfYear0 = 0;
+  let lastGrowthRate = 0;
+
+  $: {
+    if (
+      fcfYear0 > 0 &&
+      projectionGrowthRate &&
+      (fcfYear0 !== lastFcfYear0 || projectionGrowthRate !== lastGrowthRate)
+    ) {
+      lastFcfYear0 = fcfYear0;
+      lastGrowthRate = projectionGrowthRate;
+      autoFillFCF();
+    }
   }
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000000) {
-      return `$${(num / 1000000000).toFixed(2)}B`;
+      return `${(num / 1000000000).toFixed(2)}B`;
     } else if (num >= 1000000) {
-      return `$${(num / 1000000).toFixed(2)}M`;
+      return `${(num / 1000000).toFixed(2)}M`;
     } else if (num >= 1000) {
-      return `$${(num / 1000).toFixed(2)}K`;
+      return `${(num / 1000).toFixed(2)}K`;
     }
-    return `$${num.toFixed(2)}`;
+    return `${num.toFixed(2)}`;
   };
 
   const autoFillFCF = () => {
-    if (fcfYear0 === 0) {
+    if (fcfYear0 === 0 || projectionGrowthRate === 0) {
       return;
     }
+
+    console.log(
+      "Auto-filling with FCF Year 0:",
+      fcfYear0,
+      "Growth:",
+      projectionGrowthRate,
+    );
 
     const growthMultiplier = 1 + projectionGrowthRate / 100;
     let currentValue = fcfYear0;
@@ -48,6 +67,8 @@
       currentValue = currentValue * growthMultiplier;
       fcf[i] = Math.round(currentValue);
     }
+
+    console.log("Year 1 FCF:", fcf[0], "Year 10 FCF:", fcf[9]);
     fcf = [...fcf]; // Trigger reactivity
   };
 
@@ -178,34 +199,33 @@
       <h3>Current Free Cash Flow (Year 0)</h3>
 
       <div class="units-info">
-        <strong>⚠️ Important: Units Consistency</strong>
+        <strong>⚠️ Important: Verify This Number!</strong>
         <p>
-          Enter FCF in the <strong>same units</strong> as your shares outstanding.
+          The FCF below is auto-calculated from the database, but may be
+          outdated or incorrect.
         </p>
-        <p>Example for AMD:</p>
-        <ul>
-          <li>Shares Outstanding: 1,620,000,000 (full number)</li>
-          <li>FCF: 3,500,000,000 (also full number, not "3.5")</li>
-        </ul>
         <p>
-          <strong>Do NOT</strong> enter FCF in millions if shares are in full units!
+          <strong>You can edit it manually</strong> if you have more recent data.
         </p>
+        <p>FCF = Operating Cash Flow - Capital Expenditures</p>
       </div>
 
       <div class="form-group">
-        <label for="fcf-year-0">Current FCF (Base Year)</label>
+        <label for="fcf-year-0">Current FCF (Base Year) - Editable</label>
         <input
           id="fcf-year-0"
           type="number"
           bind:value={fcfYear0}
-          placeholder="Enter current/latest FCF (same units as shares)"
+          placeholder="Enter or adjust current/latest FCF"
           required
+          class="editable-highlight"
         />
         {#if fcfYear0 > 0}
           <span class="fcf-formatted-inline">{formatNumber(fcfYear0)}</span>
         {/if}
         <span class="help-text">
-          Enter the most recent full-year Free Cash Flow in absolute numbers.
+          💡 Auto-filled from database, but you can change it. Enter the most
+          recent full-year FCF.
         </span>
       </div>
 
@@ -218,8 +238,8 @@
             >
           </p>
           <p class="help-text">
-            This should be a reasonable number (typically $0.50 - $10 for most
-            stocks). If it's tiny (like $0.0001), your FCF units are wrong!
+            For AMD, this should be around <strong>$2.00 - $3.00</strong> per share.
+            If your number is significantly different, verify your FCF value!
           </p>
         </div>
       {/if}
@@ -240,13 +260,25 @@
             class="growth-input"
           />
           <span>% annual growth</span>
+          <button type="button" class="recalc-btn" on:click={autoFillFCF}>
+            🔄 Recalculate
+          </button>
         </div>
       </div>
 
       <p class="info-text">
-        💡 Adjust the growth rate above and projections will update
-        automatically
+        💡 Adjust the growth rate above and click Recalculate, or change Year 0
+        to update projections
       </p>
+
+      <div class="debug-info">
+        <strong>Debug Info:</strong> Year 1 should be ${formatNumber(
+          fcfYear0 * (1 + projectionGrowthRate / 100),
+        )}
+        with {projectionGrowthRate}% growth on Year 0 of ${formatNumber(
+          fcfYear0,
+        )}
+      </div>
 
       <div class="fcf-grid">
         {#each fcf as value, i}
@@ -359,6 +391,38 @@
     font-size: 0.9rem;
   }
 
+  .recalc-btn {
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+  }
+
+  .recalc-btn:hover {
+    background: var(--accent-primary-hover);
+    transform: translateY(-1px);
+  }
+
+  .debug-info {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .debug-info strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
   .info-text {
     background: var(--bg-secondary);
     padding: 0.75rem 1rem;
@@ -454,6 +518,20 @@
     color: var(--accent-success);
     font-size: 1.1rem;
     display: inline;
+  }
+
+  .editable-highlight {
+    border: 2px solid var(--accent-primary) !important;
+    background: linear-gradient(
+      to right,
+      var(--input-bg),
+      rgba(88, 129, 87, 0.05)
+    );
+  }
+
+  .editable-highlight:focus {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 0 3px rgba(88, 129, 87, 0.2) !important;
   }
 
   .form-group {
