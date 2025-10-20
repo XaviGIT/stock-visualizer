@@ -30,6 +30,29 @@ interface UpdateMetadataPayload {
   canUnderstandDebt?: boolean;
 }
 
+export interface StoryContent {
+  sections: {
+    overview?: string;
+    businessModel?: string;
+    competitiveAdvantages?: string;
+    risks?: string;
+    investmentThesis?: string;
+    recentDevelopments?: string;
+    outlook?: string;
+  };
+}
+
+export interface StoryResponse {
+  ticker: string;
+  companyName: string;
+  story: {
+    id?: string;
+    content: StoryContent;
+    lastEdited: string | null;
+    createdAt?: string;
+  };
+}
+
 export const stockApi = {
   async search(term: string): Promise<SearchResult[]> {
     if (!term.trim()) {
@@ -305,6 +328,52 @@ export const valuationApi = {
       return await response.json();
     } catch (error) {
       console.error("Error fetching sensitivity analysis:", error);
+      throw error;
+    }
+  },
+};
+
+export const storyApi = {
+  async getStory(ticker: string): Promise<StoryResponse> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/stories/${ticker.toUpperCase()}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching story:", error);
+      throw error;
+    }
+  },
+
+  async saveStory(
+    ticker: string,
+    content: StoryContent
+  ): Promise<StoryResponse> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/stories/${ticker.toUpperCase()}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error saving story:", error);
       throw error;
     }
   },

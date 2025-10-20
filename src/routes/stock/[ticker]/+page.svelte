@@ -242,14 +242,14 @@
             <span class="action-arrow">→</span>
           </a>
 
-          <div class="action-card disabled">
+          <a href="/stock/{ticker}/story" class="action-card">
             <div class="action-icon">📝</div>
             <div class="action-content">
               <h3>Story</h3>
               <p>Investment thesis and narrative</p>
             </div>
-            <span class="coming-soon-badge">Soon</span>
-          </div>
+            <div class="arrow">→</div>
+          </a>
         </div>
       </div>
 
