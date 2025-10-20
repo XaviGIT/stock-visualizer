@@ -153,6 +153,36 @@ This document outlines the current state of the Stock Visualizer frontend, known
 - **Review Workflow**: Structured review and approval process
 - **Export Options**: Export stories to various formats
 
+### Portfolio Management (New)
+
+#### Portfolio Overview
+- **Portfolio Dashboard**: Quick view of all holdings with key metrics
+- **Portfolio Performance**: Total return, daily/weekly/monthly performance
+- **Asset Allocation**: Visual breakdown by sector, market cap, geography
+- **Risk Metrics**: Portfolio beta, volatility, diversification score
+- **Real-time Updates**: Live price updates and performance tracking
+
+#### Portfolio Analytics
+- **Performance Attribution**: Which stocks are driving portfolio performance
+- **Correlation Analysis**: How holdings move together
+- **Sector Concentration**: Risk analysis of sector over/under-weighting
+- **Historical Performance**: Portfolio evolution over time with charts
+- **Benchmark Comparison**: Performance vs. market indices (S&P 500, etc.)
+
+#### Portfolio Management Tools
+- **Add/Remove Holdings**: Easy portfolio management interface
+- **Position Sizing**: Track shares owned and position values
+- **Dividend Tracking**: Expected and received dividend income
+- **Cost Basis Tracking**: Purchase prices and realized/unrealized gains
+- **Portfolio Rebalancing**: Tools to maintain target allocations
+
+#### Advanced Portfolio Features
+- **Dividend Projections**: Future dividend income based on current holdings
+- **Growth Projections**: Portfolio value projections over 5, 10, 20+ years
+- **Scenario Analysis**: "What if" analysis for different market conditions
+- **Tax Optimization**: Tax-loss harvesting and dividend timing
+- **Portfolio Alerts**: Notifications for significant moves or opportunities
+
 ### Management Section (New)
 
 #### Executive Information
@@ -194,6 +224,8 @@ This document outlines the current state of the Stock Visualizer frontend, known
 - **Lazy Loading**: Implement lazy loading for heavy components
 - **Caching**: Implement intelligent caching for API responses
 - **Virtualization**: Virtual scrolling for large data tables
+- **Portfolio Data Management**: Efficient handling of multiple stock data streams
+- **Real-time Updates**: WebSocket integration for live portfolio updates
 
 ### Testing Infrastructure
 - **Unit Tests**: Comprehensive unit test coverage
@@ -238,6 +270,8 @@ This document outlines the current state of the Stock Visualizer frontend, known
 - **Feature Usage**: Adoption of new features
 - **Data Quality**: Accuracy of financial data and calculations
 - **User Feedback**: Positive user feedback and suggestions
+- **Portfolio Engagement**: Time spent on portfolio management features
+- **Long-term Value**: User retention through portfolio tracking and projections
 
 ## 📅 Timeline
 
@@ -252,15 +286,19 @@ This document outlines the current state of the Stock Visualizer frontend, known
 - Add data visualization to financial statements
 - Enhance DCF calculator with sensitivity analysis
 - Redesign sector analysis
+- **Portfolio Management MVP**: Basic portfolio dashboard and holdings tracking
 
 ### Phase 3 (Q3 2024)
 - Add management section
 - Implement story versioning and collaboration
 - Add additional valuation methods
+- **Portfolio Analytics**: Performance tracking, asset allocation, risk metrics
+- **Portfolio Projections**: Dividend and growth projections for 5-10+ years
 - Performance optimization
 
 ### Phase 4 (Q4 2024)
 - Advanced analytics and AI features
+- **Advanced Portfolio Features**: Scenario analysis, tax optimization, alerts
 - PWA implementation
 - Comprehensive testing suite
 - Accessibility improvements
