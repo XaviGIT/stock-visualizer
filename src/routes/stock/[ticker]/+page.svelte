@@ -224,14 +224,14 @@
             <span class="action-arrow">→</span>
           </a>
 
-          <div class="action-card disabled">
-            <div class="action-icon">📈</div>
+          <a href="/stock/{company.ticker}/financials" class="action-card">
+            <div class="action-icon">💰</div>
             <div class="action-content">
               <h3>Financial Statements</h3>
-              <p>Balance Sheet, Income Statement, Cash Flow</p>
+              <p>Income, Balance Sheet & Cash Flow</p>
             </div>
-            <span class="coming-soon-badge">Soon</span>
-          </div>
+            <div class="arrow">→</div>
+          </a>
 
           <a href="/stock/{ticker}/valuation" class="action-card primary">
             <div class="action-icon">💰</div>

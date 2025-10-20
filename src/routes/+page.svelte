@@ -78,7 +78,7 @@
       </div>
     {/if}
 
-    <SearchResults results={searchResults} {isLoading} term={searchTerm} />
+    <SearchResults results={searchResults} {isLoading} />
   </div>
 </div>
 

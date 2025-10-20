@@ -1,4 +1,5 @@
 import type { CompanyAnalysis } from "$lib/types/analysis.type";
+import type { FinancialStatementsResponse } from "$lib/types/financials.type";
 import type { SearchResult } from "$lib/types/search.type";
 import type { Stock } from "$lib/types/stock.type";
 import type {
@@ -129,6 +130,25 @@ export const stockApi = {
       return await response.json();
     } catch (error) {
       console.error("Error fetching company financials:", error);
+      throw error;
+    }
+  },
+
+  async getFinancialStatements(
+    ticker: string
+  ): Promise<FinancialStatementsResponse> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/companies/${ticker.toUpperCase()}/financials/statements`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching financial statements:", error);
       throw error;
     }
   },
