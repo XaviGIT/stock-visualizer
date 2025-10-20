@@ -259,10 +259,14 @@
           <h3>👥 Management</h3>
           <p>Executive team, compensation, insider trading</p>
         </div>
-        <div class="coming-soon-card">
-          <h3>🏢 Sector Analysis</h3>
-          <p>Industry positioning and competitive landscape</p>
-        </div>
+        <a href="/stock/{ticker}/sector" class="action-card primary">
+          <div class="action-icon">🏢</div>
+          <div class="action-content">
+            <h3>Sector Analysis</h3>
+            <p>Industry positioning and peer comparison</p>
+          </div>
+          <span class="action-arrow">→</span>
+        </a>
       </div>
     {/if}
   </div>

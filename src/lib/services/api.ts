@@ -1,6 +1,11 @@
 import type { CompanyAnalysis } from "$lib/types/analysis.type";
 import type { FinancialStatementsResponse } from "$lib/types/financials.type";
 import type { SearchResult } from "$lib/types/search.type";
+import type {
+  PeerComparisonResponse,
+  SectorAnalysisResponse,
+  SectorListResponse,
+} from "$lib/types/sector.type";
 import type { Stock } from "$lib/types/stock.type";
 import type {
   CreateValuationPayload,
@@ -172,6 +177,58 @@ export const stockApi = {
       return await response.json();
     } catch (error) {
       console.error("Error fetching financial statements:", error);
+      throw error;
+    }
+  },
+
+  async getSectorAnalysis(ticker: string): Promise<SectorAnalysisResponse> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/sectors/${ticker.toUpperCase()}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching sector analysis:", error);
+      throw error;
+    }
+  },
+
+  async getPeerComparison(
+    ticker: string,
+    limit: number = 20
+  ): Promise<PeerComparisonResponse> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/sectors/${ticker.toUpperCase()}/peers?limit=${limit}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching peer comparison:", error);
+      throw error;
+    }
+  },
+
+  async getAllSectors(): Promise<SectorListResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/sectors/list`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching sectors:", error);
       throw error;
     }
   },
