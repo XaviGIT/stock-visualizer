@@ -184,6 +184,7 @@
         {valuations}
         {selectedValuation}
         {ticker}
+        currentPrice={company?.price ? parseFloat(company.price) : null}
         onSelect={handleSelectValuation}
         onDelete={handleDeleteValuation}
       />

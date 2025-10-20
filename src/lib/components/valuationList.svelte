@@ -3,6 +3,7 @@
   import { valuationApi } from "$lib/services/api";
   import type { SensitivityTable } from "$lib/types/valuation.type";
 
+  export let currentPrice: number | null = null;
   export let valuations: Valuation[];
   export let selectedValuation: Valuation | null;
   export let ticker: string;
@@ -139,6 +140,103 @@
         </div>
 
         <!-- Key Result -->
+        {#if currentPrice && selectedValuation.intrinsicValuePerShare}
+          {@const intrinsicValue = parseFloat(
+            selectedValuation.intrinsicValuePerShare,
+          )}
+          {@const marginOfSafety =
+            ((intrinsicValue - currentPrice) / intrinsicValue) * 100}
+          {@const upsideDownside =
+            ((intrinsicValue - currentPrice) / currentPrice) * 100}
+          {@const isUndervalued = intrinsicValue > currentPrice}
+
+          <div
+            class="comparison-card"
+            class:undervalued={isUndervalued}
+            class:overvalued={!isUndervalued}
+          >
+            <h3>💰 Valuation Comparison</h3>
+
+            <div class="comparison-grid">
+              <div class="price-box current">
+                <div class="price-label">Current Market Price</div>
+                <div class="price-value">${currentPrice.toFixed(2)}</div>
+              </div>
+
+              <div class="vs-divider">vs</div>
+
+              <div class="price-box intrinsic">
+                <div class="price-label">Intrinsic Value</div>
+                <div class="price-value">${intrinsicValue.toFixed(2)}</div>
+              </div>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-box">
+                <div class="metric-label">Margin of Safety</div>
+                <div
+                  class="metric-value"
+                  class:positive={marginOfSafety > 0}
+                  class:negative={marginOfSafety < 0}
+                >
+                  {marginOfSafety.toFixed(1)}%
+                </div>
+                <div class="metric-help">
+                  {#if marginOfSafety > 30}
+                    🟢 Strong margin of safety
+                  {:else if marginOfSafety > 15}
+                    🟡 Moderate margin of safety
+                  {:else if marginOfSafety > 0}
+                    🟠 Small margin of safety
+                  {:else}
+                    🔴 No margin of safety
+                  {/if}
+                </div>
+              </div>
+
+              <div class="metric-box">
+                <div class="metric-label">Upside/Downside</div>
+                <div
+                  class="metric-value"
+                  class:positive={upsideDownside > 0}
+                  class:negative={upsideDownside < 0}
+                >
+                  {upsideDownside > 0 ? "+" : ""}{upsideDownside.toFixed(1)}%
+                </div>
+                <div class="metric-help">
+                  {#if isUndervalued}
+                    📈 Potential upside
+                  {:else}
+                    📉 Potential downside
+                  {/if}
+                </div>
+              </div>
+
+              <div class="metric-box verdict">
+                <div class="metric-label">Verdict</div>
+                <div
+                  class="verdict-text"
+                  class:undervalued={isUndervalued}
+                  class:overvalued={!isUndervalued}
+                >
+                  {#if marginOfSafety > 30}
+                    Strong Buy
+                  {:else if marginOfSafety > 15}
+                    Buy
+                  {:else if marginOfSafety > 0}
+                    Hold
+                  {:else if marginOfSafety > -15}
+                    Sell
+                  {:else}
+                    Strong Sell
+                  {/if}
+                </div>
+                <div class="metric-help">Based on margin of safety</div>
+              </div>
+            </div>
+          </div>
+        {/if}
+
         <div class="result-card highlight">
           <div class="result-label">Intrinsic Value Per Share</div>
           <div class="result-value-large">
@@ -866,6 +964,184 @@
     th,
     td {
       padding: 0.5rem 0.25rem;
+    }
+  }
+
+  /* Comparison Card */
+  .comparison-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 2px solid var(--card-border);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .comparison-card.undervalued {
+    border-color: #22c55e;
+    background: linear-gradient(
+      135deg,
+      rgba(34, 197, 94, 0.05) 0%,
+      var(--card-bg) 100%
+    );
+  }
+
+  .comparison-card.overvalued {
+    border-color: #ef4444;
+    background: linear-gradient(
+      135deg,
+      rgba(239, 68, 68, 0.05) 0%,
+      var(--card-bg) 100%
+    );
+  }
+
+  .comparison-card h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .price-box {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid var(--card-border);
+  }
+
+  .price-box.current {
+    background: var(--bg-secondary);
+  }
+
+  .price-box.intrinsic {
+    background: linear-gradient(
+      135deg,
+      rgba(88, 129, 87, 0.1) 0%,
+      var(--bg-secondary) 100%
+    );
+    border-color: var(--accent-primary);
+  }
+
+  .price-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .price-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .vs-divider {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-align: center;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .metric-box {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--card-border);
+  }
+
+  .metric-box.verdict {
+    background: linear-gradient(
+      135deg,
+      rgba(88, 129, 87, 0.1) 0%,
+      var(--bg-secondary) 100%
+    );
+  }
+
+  .metric-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .metric-value.positive {
+    color: #22c55e;
+  }
+
+  .metric-value.negative {
+    color: #ef4444;
+  }
+
+  .metric-help {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+  }
+
+  .verdict-text {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .verdict-text.undervalued {
+    color: #22c55e;
+  }
+
+  .verdict-text.overvalued {
+    color: #ef4444;
+  }
+
+  /* Mobile responsive updates */
+  @media (max-width: 768px) {
+    .comparison-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .vs-divider {
+      transform: rotate(90deg);
+      margin: 0.5rem 0;
+    }
+
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .price-value {
+      font-size: 2rem;
+    }
+
+    .metric-value {
+      font-size: 1.5rem;
+    }
+
+    .verdict-text {
+      font-size: 1.5rem;
     }
   }
 </style>
